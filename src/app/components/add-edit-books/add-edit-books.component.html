@@ -1,11 +1,11 @@
 <div class="container">
     <h2>{{!update_book? 'Crear' : 'Actualizar'}} Libro</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
         <!-- Título del Libro -->
         <div class="row">
             <div class="col-md-12">
                 <label for="titulo_libro" class="form-label mt-4">Título del libro</label>
-                <input type="text" class="form-control" formControlName="titulo_libro" id="titulo_libro" placeholder="Introduzca el título del libro">
+                <input type="text" class="form-control" formControlName="titulo_libro" #titulo_libro id="titulo_libro" placeholder="Introduzca el título del libro">
                 <small *ngIf="titulo_libroInvalid" class="form-text text-danger">Por favor introduzca el titulo</small>
             </div>
         </div>
@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md-6">
                 <label for="id_genero" class="form-label mt-4">Autor</label>
-                <select class="form-select" id="id_autor" formControlName="id_autor">
+                <select class="form-select" id="id_autor" formControlName="id_autor" #id_autor>
                     <option value="" disabled selected>Seleccione un autor</option>
                     <option *ngFor="let autor of autores" [value]="autor.id_autor">
                         {{ autor.nombre_autor | titlecase }}
@@ -23,7 +23,7 @@
             </div>
             <div class="col-md-6">
                 <label for="id_genero" class="form-label mt-4">Género</label>
-                <select class="form-select" id="id_genero" formControlName="id_genero">
+                <select class="form-select" id="id_genero" formControlName="id_genero" #id_genero>
                     <option value="" disabled selected>Seleccione un género</option>
                     <option *ngFor="let genero of generos" [value]="genero.id_genero">
                         {{ genero.nombre_genero | titlecase }}
@@ -36,7 +36,7 @@
         <div class="row">
             <div class="col-md-6">
                 <label for="fecha_publicacion_libro" class="form-label mt-4">Fecha de publicación</label>
-                <input type="date" class="form-control" formControlName="fecha_publicacion_libro" id="fecha_publicacion_libro">
+                <input type="date" class="form-control" formControlName="fecha_publicacion_libro" #fecha_publicacion_libro id="fecha_publicacion_libro">
                 <small *ngIf="fecha_publicacion_libroInvalid" class="form-text text-danger">Por favor introduzca la fecha</small>
             </div>
         </div>
@@ -45,7 +45,7 @@
         <div class="row">
             <div class="col-md-12">
                 <label for="descripcion_libro" class="form-label mt-4">Descripción del libro</label>
-                <textarea class="form-control" id="descripcion_libro" formControlName="descripcion_libro" rows="3"></textarea>
+                <textarea class="form-control" id="descripcion_libro" formControlName="descripcion_libro" #descripcion_libro rows="3"></textarea>
                 <small *ngIf="descripcion_libroInvalid" class="form-text text-danger">Por favor introduzca la descripción</small>
             </div>
         </div>
@@ -54,17 +54,23 @@
         <div class="row">
             <div class="col-md-12">
                 <label for="imagen_libro" class="form-label mt-4">Imagen del libro</label>
-                <input class="form-control" type="file" id="imagen_libro" formControlName="imagen_libro">
+                <input class="form-control" type="file" id="imagen_libro" (change)="onFileChange($event)">
+                <!-- Mostrar solo si se está actualizando un libro -->
+                <small *ngIf="update_book" class="form-text text-muted">
+                    Imagen actual: 
+                    <a [href]="book?.imagen_libro" target="_blank">Ver imagen</a>
+                </small>
             </div>
         </div>
+
 
         <!-- Botones -->
         <div class="row mt-4">
             <div class="col-12 col-md-6">
-                <button type="submit" class="btn btn-success w-100">{{!update_book? 'Crear' : 'Actualizar'}}</button>
+                <button type="submit" class="btn btn-success w-100 icon-size-zoom">{{!update_book? 'Crear' : 'Actualizar'}}</button>
             </div>
             <div class="col-12 col-md-6">
-                <button type="button" class="btn btn-outline-danger w-100">Cancelar</button>
+                <button type="button" class="btn btn-outline-danger w-100 icon-size-zoom" routerLink="/Index-Books">Cancelar</button>
             </div>
         </div>
     </form>

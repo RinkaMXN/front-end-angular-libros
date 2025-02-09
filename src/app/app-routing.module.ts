@@ -10,6 +10,7 @@ import { ListBooksComponent } from './components/list-books/list-books.component
 const routes: Routes = [
   {path: 'Index-Books', component: ListBooksComponent},
   {path: 'CreateBook', component: AddEditBooksComponent},
+  { path: 'UpdateBook/:book_id', component: AddEditBooksComponent },
   {path: 'nav', component: NavbarComponent},
   { path: '', pathMatch: 'full', redirectTo: '' }
 ]

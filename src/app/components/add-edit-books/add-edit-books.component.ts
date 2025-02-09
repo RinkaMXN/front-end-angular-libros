@@ -6,7 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 
 // interfaces
-import { BookCreate } from 'src/app/interfaces/books.interface';
+import { BookCreate, BookData, BookUpdate } from 'src/app/interfaces/books.interface';
 import { Genero, GeneroData } from 'src/app/interfaces/generos.interface';
 import { Autor, AutorData } from 'src/app/interfaces/autores.interface';
 
@@ -49,8 +49,10 @@ export class AddEditBooksComponent implements OnInit {
     this._activatedRoute.params.subscribe(params => {      
       if( params['book_id'] != undefined ){        
         this.update_book = true;        
-        this.book_id = +params['book_id'];       
-        //this.getPurchase();        
+        this.book_id = +params['book_id'];
+        this.getGeneros();
+        this.getAutores();     
+        this.getBookById();        
       }else{
         this.formData = true;
         this.getGeneros();
@@ -58,6 +60,25 @@ export class AddEditBooksComponent implements OnInit {
         this.createForm();
       }    
     });
+  }
+
+  getBookById() {
+    this._bookService.getBookById(this.book_id).subscribe(
+      (bookData: BookData) => {
+        if (bookData.status == "success") {
+          this.book = bookData.books;
+          console.log("Estos son los datos del libro:", this.book);
+          this.formData = true;
+          this.createForm();
+        } else{
+          this.alertaError(bookData);
+        }
+      },
+      (error) => {
+        Swal.fire('Error', 'Ocurrio un error con la conexión intentelo más tarde', 'warning');
+        return;
+      }
+    );
   }
 
   getGeneros() {
@@ -94,6 +115,14 @@ export class AddEditBooksComponent implements OnInit {
     );
   }
 
+  onFileChange(event: any) {
+    if (event.target.files.length > 0) {
+        const file = event.target.files[0];
+        this.form.patchValue({ imagen_libro: file });
+    }
+  }
+
+
   
 
   get titulo_libroInvalid() {
@@ -115,13 +144,11 @@ export class AddEditBooksComponent implements OnInit {
       id_genero: [this.book != undefined ? this.book?.id_genero : '', [Validators.required]],
       fecha_publicacion_libro: [this.book != undefined ? this.book?.fecha_publicacion_libro : '', [Validators.required]],
       descripcion_libro: [this.book != undefined ? this.book?.descripcion_libro : '', [Validators.required]],
-      imagen_libro: [this.book != undefined ? this.book?.imagen_libro : '', [Validators.required]],
+      imagen_libro: [this.book != undefined ? this.book?.imagen_libro : '',],
     });
   }
 
   public onSubmit(){
-    console.log('Datos que se enviarán al backend:', this.form.value);
-
     // Si la variable update_book no está se crea un nuevo libro
     if (!this.update_book) {
       // para agregar uno nuevo
@@ -139,8 +166,23 @@ export class AddEditBooksComponent implements OnInit {
             return;
           }
         );
+    }else {
+      // para actualizar
+      this._bookService.updateBook(this.form , this.book_id)
+      .subscribe(
+        (bookUpdate: BookUpdate) => {
+          if (bookUpdate.status == "success") {
+            this.alertaSuccess(bookUpdate);
+          } else {
+            this.alertaError(bookUpdate);
+          }
+        },
+        (error) => {
+          Swal.fire('Error', 'Ocurrio un error al actualizar el libro, intentelo más tarde', 'warning');
+          return;
+        }
+      );
     }
-
   }
 
 

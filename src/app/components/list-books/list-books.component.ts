@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Book } from 'src/app/interfaces/books.interface';
+import { Book, BookData } from 'src/app/interfaces/books.interface';
 import { BookService } from 'src/app/services/book.service';
 import Swal from 'sweetalert2';
 
@@ -17,43 +17,33 @@ export class ListBooksComponent implements OnInit {
     this.getListBooks();
   }
 
+
   getListBooks() {
     this._bookService.getBooks().subscribe(
-      (bookData) => {
-        this.books = bookData.books;
+      (bookData: BookData) => {
+        if (bookData.status == "success") {
+          this.books = bookData.books;
+        } else{
+          this.alertaError(bookData);
+        }
       },
       (error) => {
-        // imprimimos de error
-        console.error("Error al obtener libros:", error.message);
-        // imprimimos el error que manda el back
-        this.alertaError({ errors: [error.error.message] });
+        Swal.fire('Error', 'Ocurrio un error con la conexión intentelo más tarde', 'warning');
+        return;
       }
     );
   }
 
-  // ✅ Notificación success
-  public alertaSuccess(elemento: { message: string }) {
+  
+  // ✅ Notificación error con validación
+  public alertaError(elemento: { message: string }) {
     Swal.fire({
-      icon: 'success',
+      icon: 'error',
       text: elemento.message,
       showConfirmButton: true,
       confirmButtonColor: '#EEB838',
       timer: 3500
-    }).then(() => {
-     // this._router.navigateByUrl('/admin/pmanager/purchases');
     });
   }
 
-  // ✅ Notificación error con validación
-  public alertaError(elemento: { errors?: string[] }) {
-    const errorMsg = elemento.errors?.[0] || "Ha ocurrido un error inesperado.";
-    Swal.fire({
-      icon: 'error',
-      title: 'Ooopppps!',
-      text: errorMsg,
-      showConfirmButton: true,
-      confirmButtonColor: '#EEB838',
-      timer: 3500
-    });
-  }
 }

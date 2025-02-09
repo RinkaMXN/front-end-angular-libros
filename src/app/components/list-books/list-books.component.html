@@ -1,6 +1,6 @@
 <div class="container">
     <h4>CRUD Libros</h4>
-    <button type="button" class="btn btn-success icon-size-zoom mb-2" routerLink="/CreateBook">Agregar Prod</button>
+    <button type="button" class="btn btn-success icon-size-zoom mb-2" routerLink="/CreateBook">Agregar</button>
     <table *ngIf="books. length > 0" class="table table-hover">
         <thead class="table-dark">
           <tr>
@@ -18,11 +18,13 @@
             <th scope="row"> {{ item.id_libro}} </th>
             <td>{{ item.titulo_libro}}</td>
             <td>{{ '*' + item.id_autor }}</td>
-            <td>{{ item.id_genero}}</td>
+            <td>{{ '*' + item.id_genero}}</td>
             <td>{{ item.fecha_publicacion_libro}}</td>
-            <td>{{ item.imagen_libro}}</td>
             <td>
-              <button type="button" class="btn btn-sm btn-primary icon-size-zoom">EDIT</button>
+              <img [src]="item.imagen_libro" alt="Imagen del libro" width="100">
+            </td>
+            <td>
+              <button type="button" class="btn btn-sm btn-primary icon-size-zoom" [routerLink]="['/UpdateBook/', item.id_libro ]">EDIT</button>
               <button type="button" class="btn btn-sm btn-outline-danger icon-size-zoom ms-2">DELETE</button>
             </td>
           </tr>
